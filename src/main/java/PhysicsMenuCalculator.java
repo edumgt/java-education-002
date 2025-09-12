@@ -1,3 +1,4 @@
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class PhysicsMenuCalculator {
@@ -53,8 +54,12 @@ public class PhysicsMenuCalculator {
                 default:
                     System.out.println("\n❌ 잘못된 선택입니다. (1~3 입력)");
             }
+        } catch (InputMismatchException e) {
+            System.err.println("\n❌ 숫자가 아닌 값을 입력했습니다!");
+            e.printStackTrace(); // 👉 실제 오류 스택 트레이스 출력 (정확한 원인 확인 가능)
         } catch (Exception e) {
-            System.err.println("\n❌ 입력 오류: " + e.getMessage());
+            System.err.println("\n❌ 알 수 없는 오류 발생: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

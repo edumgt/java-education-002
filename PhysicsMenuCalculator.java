@@ -5,6 +5,25 @@ import java.util.Scanner;
 public class PhysicsMenuCalculator {
 
     public static void main(String[] args) {
+        // 1. 실행 인자가 있으면 자동 실행
+        if (args.length > 0) {
+            String arg = args[0];
+            if ("9".equals(arg)) {
+                System.out.println("\n🚀 Physics Mini Calculator (자동 실행 모드)\n");
+                System.out.println("👉 메뉴 선택: 9 (JVM/시스템 상태 출력)\n");
+                printJvmAndSystemStatus();
+                System.out.println("\n👋 프로그램을 종료합니다.");
+                return;
+            } else if ("0".equals(arg)) {
+                System.out.println("\n👋 프로그램을 종료합니다. (자동 실행)");
+                return;
+            } else {
+                System.out.println("\n❌ 알 수 없는 실행 인자: " + arg);
+                return;
+            }
+        }
+
+        // 2. 실행 인자가 없으면 기존 메뉴 방식
         try (Scanner input = new Scanner(System.in)) {
             boolean running = true;
 
@@ -88,33 +107,24 @@ public class PhysicsMenuCalculator {
 
     // ✅ JVM & 시스템 상태 출력 함수
     private static void printJvmAndSystemStatus() {
-        // 메모리 상태
         MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
         MemoryUsage heap = memoryMXBean.getHeapMemoryUsage();
         MemoryUsage nonHeap = memoryMXBean.getNonHeapMemoryUsage();
 
-        // 스레드 상태
         ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
-
-        // 클래스 로딩 상태
         ClassLoadingMXBean classLoadingMXBean = ManagementFactory.getClassLoadingMXBean();
-
-        // OS / CPU 상태
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
 
         System.out.println("\n🖥 JVM & System 상태 -------------------");
         System.out.println("▶ Heap 메모리: 사용 " + (heap.getUsed() / (1024 * 1024)) + "MB / "
                 + (heap.getMax() / (1024 * 1024)) + "MB");
         System.out.println("▶ Non-Heap 메모리: 사용 " + (nonHeap.getUsed() / (1024 * 1024)) + "MB");
-
         System.out.println("▶ 실행 중 스레드 수: " + threadMXBean.getThreadCount());
         System.out.println("▶ 로드된 클래스 수: " + classLoadingMXBean.getLoadedClassCount());
-
         System.out.println("▶ OS: " + osBean.getName() + " " + osBean.getVersion());
         System.out.println("▶ CPU 아키텍처: " + osBean.getArch());
         System.out.println("▶ CPU 코어 수: " + osBean.getAvailableProcessors());
 
-        // 일부 JVM에서는 getSystemLoadAverage 제공
         double load = osBean.getSystemLoadAverage();
         if (load >= 0) {
             System.out.println("▶ 시스템 Load Average: " + load);

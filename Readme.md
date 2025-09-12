@@ -4,5 +4,5 @@
 ## Java 강의용 샘플 - https://www.youtube.com/@softwareedumgt152 채널의 동영상 강의 자료
 
 ## javac -encoding UTF-8 PhysicsMenuCalculator.java
-## java -Xms10m -Xmx12m PhysicsMenuCalculator
+## java -Xms3m -Xmx5m PhysicsMenuCalculator
 

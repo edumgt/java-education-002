@@ -1,3 +1,4 @@
+import java.lang.management.*;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -13,7 +14,7 @@ public class PhysicsMenuCalculator {
                 System.out.println("  1. 가속도 (Acceleration)");
                 System.out.println("  2. 평균 속도 (Average Velocity)");
                 System.out.println("  3. 이동 거리 (Distance)");
-                System.out.println("  9. JVM 상태 출력");
+                System.out.println("  9. JVM/시스템 상태 출력");
                 System.out.println("  0. 종료");
                 System.out.print("\n👉 선택: ");
 
@@ -44,8 +45,8 @@ public class PhysicsMenuCalculator {
                         System.out.println("\n▶ 이동 거리 = " + String.format("%.4f", distance) + " m");
                         break;
 
-                    case 9: // JVM 상태 출력
-                        printJvmStatus();
+                    case 9:
+                        printJvmAndSystemStatus();
                         break;
 
                     case 0:
@@ -85,24 +86,41 @@ public class PhysicsMenuCalculator {
         }
     }
 
-    // ✅ JVM 상태 출력 함수
-    private static void printJvmStatus() {
-        Runtime rt = Runtime.getRuntime();
+    // ✅ JVM & 시스템 상태 출력 함수
+    private static void printJvmAndSystemStatus() {
+        // 메모리 상태
+        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        MemoryUsage heap = memoryMXBean.getHeapMemoryUsage();
+        MemoryUsage nonHeap = memoryMXBean.getNonHeapMemoryUsage();
 
-        long total = rt.totalMemory() / (1024 * 1024);
-        long free = rt.freeMemory() / (1024 * 1024);
-        long max = rt.maxMemory() / (1024 * 1024);
+        // 스레드 상태
+        ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
 
-        Thread current = Thread.currentThread();
-        ClassLoader loader = PhysicsMenuCalculator.class.getClassLoader();
+        // 클래스 로딩 상태
+        ClassLoadingMXBean classLoadingMXBean = ManagementFactory.getClassLoadingMXBean();
 
-        System.out.println("\n🖥 JVM 상태 출력 -------------------");
-        System.out.println("▶ 힙 메모리 총량 (total): " + total + " MB");
-        System.out.println("▶ 사용 가능 메모리 (free): " + free + " MB");
-        System.out.println("▶ JVM 최대 메모리 (max): " + max + " MB");
-        System.out.println("\n▶ 현재 스레드: " + current.getName() +
-                           " (ID=" + current.getId() + ", 상태=" + current.getState() + ")");
-        System.out.println("▶ 클래스 로더: " + loader);
+        // OS / CPU 상태
+        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+
+        System.out.println("\n🖥 JVM & System 상태 -------------------");
+        System.out.println("▶ Heap 메모리: 사용 " + (heap.getUsed() / (1024 * 1024)) + "MB / "
+                + (heap.getMax() / (1024 * 1024)) + "MB");
+        System.out.println("▶ Non-Heap 메모리: 사용 " + (nonHeap.getUsed() / (1024 * 1024)) + "MB");
+
+        System.out.println("▶ 실행 중 스레드 수: " + threadMXBean.getThreadCount());
+        System.out.println("▶ 로드된 클래스 수: " + classLoadingMXBean.getLoadedClassCount());
+
+        System.out.println("▶ OS: " + osBean.getName() + " " + osBean.getVersion());
+        System.out.println("▶ CPU 아키텍처: " + osBean.getArch());
+        System.out.println("▶ CPU 코어 수: " + osBean.getAvailableProcessors());
+
+        // 일부 JVM에서는 getSystemLoadAverage 제공
+        double load = osBean.getSystemLoadAverage();
+        if (load >= 0) {
+            System.out.println("▶ 시스템 Load Average: " + load);
+        } else {
+            System.out.println("▶ 시스템 Load Average: 지원되지 않음");
+        }
         System.out.println("-----------------------------------\n");
     }
 }
